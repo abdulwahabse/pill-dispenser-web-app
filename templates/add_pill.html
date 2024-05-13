@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block title %}Add Pill{% endblock %}
+
+{% block body %}
+
+<h1>Add Pill</h1>
+<form action="/add_pill" method="POST">
+    <label for="name">Name:</label>
+    <input id="name" name="name" type="text" required/>
+    <br><br>
+    <label for="dosage">Dosage:</label>
+    <input type="timtexte" id="time" name="dosage" required><br><br>
+    <button type="submit">Add Pill</button>
+</form>
+
+{% endblock %}
