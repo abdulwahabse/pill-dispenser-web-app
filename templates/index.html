@@ -3,63 +3,93 @@
 {% block title %}Home{% endblock %}
 
 {% block body %}
-  
-<h1>Schedules</h1>
-<table>
-    <thead>
-        <tr>
-            <th>Day</th>
-            <th>Time</th>
-            <th>Pill</th>
-            <th>Quantity</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for schedule in schedules %}
-        <tr>
-            <td>{{ schedule.day }}</td>
-            <td>{{ schedule.time }}</td>
-            <td>{{ schedule.pill.name }}</td>
-            <td>{{ schedule.quantity }}</td>
-            <td>
-                <a href="/edit_schedule/{{ schedule.id }}">Edit</a> |
-                <form action="/delete_schedule/{{ schedule.id }}" method="POST" style="display: inline;">
-                    <button type="submit" style="background-color: transparent; border: none; color: red; cursor: pointer;">Delete</button>
-                </form>
-            </td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
-<br>
-<a href="/add_schedule">Add Schedule</a>
-<br>
-<h1>Pills</h1>
-<table>
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Dosage</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for pill in pills %}
-        <tr>
-            <td>{{ pill.name }}</td>
-            <td>{{ pill.dosage }}</td>
-            <td>
-                <a href="/edit_pill/{{ pill.id }}">Edit</a> |
-                <form action="/delete_pill/{{ pill.id }}" method="POST" style="display: inline;">
-                    <button type="submit" style="background-color: transparent; border: none; color: red; cursor: pointer;">Delete</button>
-                </form>
-            </td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
-<br>
-<a href="/add_pill">Add Pill</a> 
+<section class="mt-6"> 
+    <h1 class="title">Schedules 🗓️</h1>
+    <table class="table is-hoverable is-fullwidth is-bordered">
+        <thead>
+            <tr>
+                <th>Day</th>
+                <th>Time</th>
+                <th>Pill</th>
+                <th>Quantity</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for schedule in schedules %}
+            <tr>
+                <td>{{ schedule.day }}</td>
+                <td>{{ schedule.time }}</td>
+                <td>{{ schedule.pill.name }}</td>
+                <td>{{ schedule.quantity }}</td>
+                <td>
+                    <a href="/edit_schedule/{{ schedule.id }}" class="button is-small is-link">
+                        <span class="icon">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                        </span>
+                    </a> |
+                    <form action="/delete_schedule/{{ schedule.id }}" method="POST" style="display: inline;">
+                        <button type="submit" class="button is-small is-danger">
+                            <span class="icon">
+                                <i class="fa-solid fa-trash"></i>
+                            </span>
+                        </button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <a href="/add_schedule" class="button is-primary is-rounded">
+        <span class="icon">
+            <i class="fa-solid fa-plus"></i>
+        </span> 
+        <span>
+            Add Schedule
+        </span>
+    </a>
+</section>
 
+<section class="mt-6"> 
+    <h1 class="title">Pills 💊</h1>
+    <table  class="table is-hoverable is-bordered">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Dosage</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for pill in pills %}
+            <tr>
+                <td>{{ pill.name }}</td>
+                <td>{{ pill.dosage }}</td>
+                <td>
+                    <a href="/edit_pill/{{ pill.id }}" class="button is-small is-link">
+                        <span class="icon">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                        </span>
+                    </a> |
+                    <form action="/delete_pill/{{ pill.id }}" method="POST" style="display: inline;">
+                        <button type="submit" class="button is-small is-danger">
+                            <span class="icon">
+                                <i class="fa-solid fa-trash"></i>
+                            </span>
+                        </button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <a href="/add_pill" class="button is-primary is-rounded">
+        <span class="icon">
+            <i class="fa-solid fa-plus"></i>
+        </span> 
+        <span>
+            Add Pill
+        </span>
+    </a> 
+</section>
 {% endblock %}

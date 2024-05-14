@@ -4,21 +4,43 @@
 
 {% block body %}
 
-<h1>Edit Schedule</h1>
-<form action="/edit_schedule/{{ schedule.id }}" method="POST">
-    <label for="day">Day:</label>
-    <input type="text" id="day" name="day" value="{{ schedule.day }}"><br><br>
-    <label for="time">Time:</label>
-    <input type="text" id="time" name="time" value="{{ schedule.time }}"><br><br>
-    <label for="pill">Pill:</label>
-    <select id="pill" name="pill_id" required>
-        {% for pill in pills %}
-            <option value="{{ pill.id }}" {% if pill.id == schedule.pill_id %} selected {% endif %}>{{ pill.name }}</option>
-        {% endfor %}
-    </select><br><br>
-    <label for="quantity">Quantity:</label>
-    <input type="number" id="quantity" name="quantity" min="1" value="{{ schedule.quantity }}" required><br><br>
-    <button type="submit">Save Changes</button>
-</form>
+<section class="mt-6"> 
+    <h1 class="title">Edit Schedule</h1>
+    <form action="/edit_schedule/{{ schedule.id }}" method="POST">
+        <div class="field">
+            <label for="day" class="label">Day</label>
+            <div class="select is-rounded">
+                <select id="day" name="day" required>
+                    <option value="Monday" {% if schedule.day == 'Monday' %} selected {% endif %}>Monday</option>
+                    <option value="Tuesday" {% if schedule.day == 'Tuesday' %} selected {% endif %}>Tuesday</option>
+                    <option value="Wednesday" {% if schedule.day == 'Wednesday' %} selected {% endif %}>Wednesday</option>
+                    <option value="Thursday" {% if schedule.day == 'Thursday' %} selected {% endif %}>Thursday</option>
+                    <option value="Friday" {% if schedule.day == 'Friday' %} selected {% endif %}>Friday</option>
+                    <option value="Saturday" {% if schedule.day == 'Saturday' %} selected {% endif %}>Saturday</option>
+                    <option value="Sunday" {% if schedule.day == 'Sunday' %} selected {% endif %}>Sunday</option>
+                </select>
+            </div>
+        </div>
+        <div class="field">
+            <label for="time" class="label">Time</label>
+            <input class="input is-rounded" style="width: max-content;" type="time" id="time" name="time" value="{{ schedule.time }}">
+        </div>
+        <div class="field">
+            <label for="pill" class="label">Pill</label>
+            <div class="select is-rounded">
+                <select id="pill" name="pill_id" required>
+                    {% for pill in pills %}
+                        <option value="{{ pill.id }}" {% if pill.id == schedule.pill_id %} selected {% endif %}>{{ pill.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="field">
+            <label for="quantity" class="label">Quantity</label>
+            <input class="input is-rounded" style="width: max-content;" type="number" id="quantity" name="quantity" min="1" value="{{ schedule.quantity }}" required><br><br>
+        </div>
+        <button type="submit" class="button is-primary is-rounded mt-3">Save Changes</button>
+    </form>
+</section>
 
 {% endblock %}
