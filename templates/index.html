@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}Home{% endblock %}
+{% block title %}Dashboard{% endblock %}
 
 {% block body %}
 <section class="mt-6"> 
@@ -11,6 +11,7 @@
                 <th>Day</th>
                 <th>Time</th>
                 <th>Pill</th>
+                <th>Tank</th>
                 <th>Quantity</th>
                 <th>Actions</th>
             </tr>
@@ -21,6 +22,7 @@
                 <td>{{ schedule.day }}</td>
                 <td>{{ schedule.time }}</td>
                 <td>{{ schedule.pill.name }}</td>
+                <td>{{ 'A (left)' if schedule.pill.tank == 'a' else 'B (right)' }}</td>
                 <td>{{ schedule.quantity }}</td>
                 <td>
                     <a href="/edit_schedule/{{ schedule.id }}" class="button is-small is-link">
@@ -40,14 +42,57 @@
             {% endfor %}
         </tbody>
     </table>
-    <a href="/add_schedule" class="button is-primary is-rounded">
-        <span class="icon">
-            <i class="fa-solid fa-plus"></i>
-        </span> 
-        <span>
-            Add Schedule
-        </span>
-    </a>
+    {% if disable_add_schedule %}
+        <a href="/add_schedule" class="button is-primary is-rounded" disabled>
+            <span class="icon">
+                <i class="fa-solid fa-plus"></i>
+            </span> 
+            <span>
+                Add Schedule
+            </span>
+        </a>
+    {% else %}
+        <a href="/add_schedule" class="button is-primary is-rounded">
+            <span class="icon">
+                <i class="fa-solid fa-plus"></i>
+            </span> 
+            <span>
+                Add Schedule
+            </span>
+        </a>
+    {% endif %}
+</section>
+
+<section class="mt-6"> 
+    <h1 class="title">Logs 📜</h1>
+    <table class="table is-hoverable is-fullwidth is-bordered">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Pill</th>
+                <th>Tank</th>
+                <th>Quantity</th>
+                <th>Intake Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for log in logs %}
+            <tr>  
+                <td>{{ log.date_time.strftime('%Y-%m-%d') }}</td>
+                <td>{{ log.date_time.strftime('%H:%M') }}</td>
+                <td>{{ log.schedule.pill.name }}</td>
+                <td>{{ 'A (left)' if log.schedule.pill.tank == 'a' else 'B (right)' }}</td>
+                <td>{{ log.schedule.quantity }}</td>
+                <td>
+                    <span class="tag {{ 'is-success' if log.intake_status == 'taken' else 'is-danger' }}">
+                        {{ 'Taken' if log.intake_status == 'taken' else 'Missed' }}
+                    </span>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 </section>
 
 <section class="mt-6"> 
@@ -57,6 +102,7 @@
             <tr>
                 <th>Name</th>
                 <th>Dosage</th>
+                <th>Tank</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -65,6 +111,7 @@
             <tr>
                 <td>{{ pill.name }}</td>
                 <td>{{ pill.dosage }}</td>
+                <td>{{ 'A (left)' if pill.tank == 'a' else 'B (right)' }}</td>
                 <td>
                     <a href="/edit_pill/{{ pill.id }}" class="button is-small is-link">
                         <span class="icon">
@@ -83,13 +130,26 @@
             {% endfor %}
         </tbody>
     </table>
-    <a href="/add_pill" class="button is-primary is-rounded">
-        <span class="icon">
-            <i class="fa-solid fa-plus"></i>
-        </span> 
-        <span>
-            Add Pill
-        </span>
-    </a> 
+    <!-- if are_two_pills variable = True then disable the link -->
+    {% if are_two_pills %}
+        <a href="/add_pill" class="button is-primary is-rounded" disabled>
+            <span class="icon">
+                <i class="fa-solid fa-plus"></i>
+            </span> 
+            <span>
+                Add Pill
+            </span>
+        </a> 
+    {% else %}
+        <a href="/add_pill" class="button is-primary is-rounded">
+            <span class="icon">
+                <i class="fa-solid fa-plus"></i>
+            </span> 
+            <span>
+                Add Pill
+            </span>
+        </a> 
+    {% endif %}
+
 </section>
 {% endblock %}
