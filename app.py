@@ -11,6 +11,7 @@ class Pill(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     dosage = db.Column(db.String(20), nullable=False)
+    tank = db.Column(db.String(1), nullable=False, default='a')
     schedules = db.relationship('Schedule', backref='pill', lazy=True)
 
 class Schedule(db.Model):
@@ -23,7 +24,8 @@ class Schedule(db.Model):
 
 class Log(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    is_taken = db.Column(db.Boolean, default=False)
+    # intake_status = ('taken', 'missed')
+    intake_status = db.Column(db.String(6), nullable=False)
     date_time = db.Column(db.DateTime, default=datetime.utcnow)
     schedule_id = db.Column(db.Integer, db.ForeignKey('schedule.id'), nullable=False)
 
@@ -69,11 +71,22 @@ def add_pill():
     if request.method == 'POST':
         name = request.form['name']
         dosage = request.form['dosage']
-        new_pill = Pill(name=name, dosage=dosage)
+        tank = request.form['tank']
+        new_pill = Pill(name=name, dosage=dosage, tank=tank)
         db.session.add(new_pill)
         db.session.commit()
         return redirect('/')
-    return render_template('add_pill.html')
+    
+    taken_tank_a = False
+    taken_tank_b = False
+    pills = Pill.query.all()
+    if len(pills) == 1:
+        tank = pills[0].tank
+        if tank == 'a':
+            taken_tank_a = True
+        else:
+            taken_tank_b = True
+    return render_template('add_pill.html', taken_tank_a=taken_tank_a, taken_tank_b=taken_tank_b)
 
 @app.route('/delete_pill/<int:pill_id>', methods=['POST'])
 def delete_pill(pill_id):
@@ -88,6 +101,7 @@ def edit_pill(pill_id):
     if request.method == 'POST':
         pill.name = request.form['name']
         pill.dosage = request.form['dosage']
+        pill.tank = request.form['tank']
         db.session.commit()
         return redirect('/')
     return render_template('edit_pill.html', pill=pill)
@@ -97,7 +111,48 @@ def edit_pill(pill_id):
 def index():
     schedules = Schedule.query.all()
     pills = Pill.query.all()
-    return render_template('index.html', schedules=schedules, pills=pills)
+    logs = Log.query.all()
+    disable_add_schedule = False
+    are_two_pills = False
+    if len(pills) == 2:
+        are_two_pills = True
+    if len(pills) == 0:
+        disable_add_schedule = True
+    return render_template('index.html', schedules=schedules, pills=pills, logs=logs, disable_add_schedule=disable_add_schedule, are_two_pills=are_two_pills)
+
+@app.route('/api/now')
+def now():
+    return {
+        'status': 'success',
+        'day': datetime.now().strftime('%A'), 
+        'time': datetime.now().strftime('%H:%M:%S')
+    }
+
+@app.route('/api/server_status')
+def server_status():
+    return {
+        'status': 'success',
+        'server_status': 'running'
+    }
+
+@app.route('/api/logs', methods=['POST'])
+def logs():
+    data = request.get_json()
+    if 'intake_status' not in data or 'schedule_id' not in data:
+        return {'status': 'error', 'message': 'missing status or schedule_id'}, 400
+    # if schedule_id is not found in the database then return HTTP code 404
+    if not Schedule.query.get(data['schedule_id']):
+        return {'status': 'error', 'message': 'schedule_id not found'}, 404
+    new_log = Log(intake_status=data['intake_status'], schedule_id=data['schedule_id'])
+    db.session.add(new_log)
+    db.session.commit()
+    return {'status': 'success', 'message': 'log added successfully'}
+
+# get time for upcoming pill (pill or pills) (keep-alive) --> time, schedule_id, pill name, tank
+# write an endpoint to get the upcoming pill time. First find the current time and day. Then find the upcoming pill from tank A and B and return the time of the upcoming pills, schedule_id, pill name, and tank. Return two pills (one from tank A and one from tank B)
+
+
 
 if __name__ == '__main__':
+    # app.run(host='0.0.0.0')
     app.run(debug=True)
