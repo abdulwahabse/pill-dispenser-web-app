@@ -148,10 +148,26 @@ def logs():
     db.session.commit()
     return {'status': 'success', 'message': 'log added successfully'}
 
-# get time for upcoming pill (pill or pills) (keep-alive) --> time, schedule_id, pill name, tank
-# write an endpoint to get the upcoming pill time. First find the current time and day. Then find the upcoming pill from tank A and B and return the time of the upcoming pills, schedule_id, pill name, and tank. Return two pills (one from tank A and one from tank B)
-
-
+@app.route('/api/upcoming_pills')
+def upcoming_pills():
+    day = datetime.now().strftime('%A')
+    time = datetime.now().strftime('%H:%M')
+    schedules = Schedule.query.all()
+    upcoming_pills = []
+    for schedule in schedules:
+        if schedule.day == day and schedule.time > time:
+            upcoming_pills.append({
+                'schedule_id': schedule.id,
+                'pill_name': schedule.pill.name,
+                'tank': schedule.pill.tank,
+                'quantity': schedule.quantity,
+                'time': schedule.time
+            })
+    upcoming_pills = sorted(upcoming_pills, key=lambda x: x['time'])
+    return {
+        'status': 'success',
+        'upcoming_pills': upcoming_pills[:2]
+    }
 
 if __name__ == '__main__':
     # app.run(host='0.0.0.0')
