@@ -1,11 +1,16 @@
+import eventlet
+eventlet.monkey_patch()  
+
 from datetime import datetime
 from flask import Flask, render_template, request, redirect
 from flask_sqlalchemy import SQLAlchemy
+from flask_socketio import SocketIO, emit
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'dfewfew123213rwdsgert34tgfd1234grgsf'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 db = SQLAlchemy(app)
+socketio = SocketIO(app)
 
 class Pill(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -48,6 +53,10 @@ def add_schedule():
 
 @app.route('/delete_schedule/<int:schedule_id>', methods=['POST'])
 def delete_schedule(schedule_id):
+    # if schedule_id is used then delete all the logs associated with that schedule_id first then delete the schedule
+    logs = Log.query.filter_by(schedule_id=schedule_id).all()
+    for log in logs:
+        db.session.delete(log)
     schedule = Schedule.query.get_or_404(schedule_id)
     db.session.delete(schedule)
     db.session.commit()
@@ -90,6 +99,13 @@ def add_pill():
 
 @app.route('/delete_pill/<int:pill_id>', methods=['POST'])
 def delete_pill(pill_id):
+    # if pill_id is used in Schedule then find the schedules associated with that pill_id and find the logs associated with those schedules and delete them first. Then delete that schedule. Then delete the pill
+    schedules = Schedule.query.filter_by(pill_id=pill_id).all()
+    for schedule in schedules:
+        logs = Log.query.filter_by(schedule_id=schedule.id).all()
+        for log in logs:
+            db.session.delete(log)
+        db.session.delete(schedule)
     pill = Pill.query.get_or_404(pill_id)
     db.session.delete(pill)
     db.session.commit()
@@ -113,17 +129,21 @@ def index():
     pills = Pill.query.all()
     logs = Log.query.all()
     disable_add_schedule = False
+    disable_clear_logs = False
     are_two_pills = False
     if len(pills) == 2:
         are_two_pills = True
     if len(pills) == 0:
         disable_add_schedule = True
-    return render_template('index.html', schedules=schedules, pills=pills, logs=logs, disable_add_schedule=disable_add_schedule, are_two_pills=are_two_pills)
+    if len(logs) == 0:
+        disable_clear_logs = True
+    return render_template('index.html', schedules=schedules, pills=pills, logs=logs, disable_add_schedule=disable_add_schedule, are_two_pills=are_two_pills, disable_clear_logs=disable_clear_logs)
 
 @app.route('/api/now')
 def now():
     return {
         'status': 'success',
+        'date': datetime.now().strftime('%Y-%m-%d'), # '2021-09-01'
         'day': datetime.now().strftime('%A'), 
         'time': datetime.now().strftime('%H:%M:%S')
     }
@@ -146,7 +166,21 @@ def logs():
     new_log = Log(intake_status=data['intake_status'], schedule_id=data['schedule_id'])
     db.session.add(new_log)
     db.session.commit()
+    socketio.emit('database_updated', {'message': 'Log added'})
     return {'status': 'success', 'message': 'log added successfully'}
+
+@app.route('/api/clear_logs', methods=['POST'])
+def clear_logs_api():
+    Log.query.delete()
+    db.session.commit()
+    socketio.emit('database_updated', {'message': 'Logs cleared'})
+    return {'status': 'success', 'message': 'logs cleared successfully'}
+
+@app.route('/clear_logs', methods=['POST'])
+def clear_logs():
+    Log.query.delete()
+    db.session.commit()
+    return redirect('/')
 
 @app.route('/api/upcoming_pills')
 def upcoming_pills():
@@ -170,5 +204,5 @@ def upcoming_pills():
     }
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0')
-    # app.run(debug=True)
+    # socketio.run(app, debug=True)
+    socketio.run(app, debug=True, host='0.0.0.0')

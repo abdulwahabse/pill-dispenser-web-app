@@ -25,6 +25,8 @@
 		rel="stylesheet"
 		href="{{ url_for('static', filename='css/brands.min.css') }}"
 	>
+	<!-- Socket -->
+	<script src="{{ url_for('static', filename='scripts/socket.io.min.js') }}"></script>
 </head>
 
 <body>
@@ -43,6 +45,15 @@
 		</p>
 	</div>
 </footer>
+
+<script>
+	const socket = io();
+
+	socket.on('database_updated', function(data) {
+		console.log(data.message);
+		location.reload();
+	});
+</script>
 
 </body>
 </html>

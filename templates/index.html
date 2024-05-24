@@ -63,8 +63,50 @@
     {% endif %}
 </section>
 
-<section class="mt-6"> 
-    <h1 class="title">Logs 📜</h1>
+<section class="mt-6">     
+    <div class="is-flex is-justify-content-space-between" style="align-items: center;">
+        <h1 class="title">Logs 📜</h1>
+        <!-- if disable_clear_logs is true then disable the button -->
+        {% if disable_clear_logs %}
+            <button class="button is-danger is-rounded is-light" disabled>
+                <span class="icon">
+                    <i class="fa-solid fa-trash"></i>
+                </span> 
+                <span>
+                    Clear Logs
+                </span>
+            </button>
+        {% else %}
+            <button class="button is-danger is-rounded is-light" onclick="document.getElementById('modal').classList.add('is-active')">
+                <span class="icon">
+                    <i class="fa-solid fa-trash"></i>
+                </span> 
+                <span>
+                    Clear Logs
+                </span>
+            </button>
+        {% endif %}
+        <!-- Modal -->
+        <div class="modal" id="modal">
+            <div class="modal-background"></div>
+            <div class="modal-card">
+                <header class="modal-card-head">
+                    <p class="modal-card
+                    -title">Clear Logs</p>
+                    <button class="delete" aria-label="close" onclick="document.getElementById('modal').classList.remove('is-active')"></button>
+                </header>
+                <section class="modal-card-body">
+                    Are you sure you want to clear all logs?
+                </section>
+                <footer class="modal-card-foot">
+                    <form action="/clear_logs" method="POST">
+                        <button type="submit" class="button is-danger mr-3">Yes</button>
+                    </form>
+                    <button class="button" onclick="document.getElementById('modal').classList.remove('is-active')">Cancel</button>
+                </footer>
+            </div>
+        </div>
+    </div>
     <table class="table is-hoverable is-fullwidth is-bordered">
         <thead>
             <tr>
