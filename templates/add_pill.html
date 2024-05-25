@@ -7,27 +7,38 @@
 <section class="mt-6"> 
     <h1 class="title">Add Pill</h1>
     <form action="/add_pill" method="POST">
-        <div class="field">
-            <label for="name" class="label">Name</label>
-            <input class="input is-rounded" style="width: max-content;" id="name" name="name" type="text" required/>
-        </div>
-        <div class="field">
-            <label for="dosage" class="label">Dosage</label>
-            <input class="input is-rounded" style="width: max-content;" type="timtexte" id="time" name="dosage" required>
-        </div>
-        <div class="field">
-            <label for="tank" class="label">Tank</label>
-            <div class="select is-rounded" style="width: max-content;">
-                <select id="tank" name="tank" required>
-                    {% if not taken_tank_a %}
-                        <option value="a">A (left)</option>
-                    {% endif %}
-                    {% if not taken_tank_b %}
-                        <option value="b">B (right)</option>
-                    {% endif %}
-                </select>
+        <div class="fixed-grid">
+            <div class="grid">
+                <div class="cell">
+                    <div class="field">
+                        <label for="name" class="label">Name</label>
+                        <input class="input is-rounded" style="width: max-content;" id="name" name="name" type="text" required/>
+                    </div>
+                </div>
+                <div class="cell">
+                    <div class="field">
+                        <label for="dosage" class="label">Dosage</label>
+                        <input class="input is-rounded" style="width: max-content;" type="timtexte" id="time" name="dosage" required>
+                    </div>
+                </div>
+                <div class="cell">
+                    <div class="field">
+                        <label for="tank" class="label">Tank</label>
+                        <div class="select is-rounded" style="width: max-content;">
+                            <select id="tank" name="tank" required>
+                                {% if not taken_tank_a %}
+                                    <option value="a">A (left)</option>
+                                {% endif %}
+                                {% if not taken_tank_b %}
+                                    <option value="b">B (right)</option>
+                                {% endif %}
+                            </select>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
+        
         <button type="submit" class="button is-primary is-rounded mt-3">
             <span class="icon">
                 <i class="fa-solid fa-plus"></i>

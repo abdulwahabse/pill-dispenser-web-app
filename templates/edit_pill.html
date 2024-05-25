@@ -7,23 +7,34 @@
 <section class="mt-6"> 
     <h1 class="title">Edit Pill</h1>
     <form action="/edit_pill/{{ pill.id }}" method="POST">
-        <div class="field">
-            <label for="name" class="label">Name</label>
-            <input class="input is-rounded" style="width: max-content;" type="text" id="name" name="name" value="{{ pill.name }}">
-        </div>
-        <div class="field">
-            <label for="dosage" class="label">Dosage</label>
-            <input class="input is-rounded" style="width: max-content;" type="text" id="dosage" name="dosage" value="{{ pill.dosage }}">
-        </div>
-        <div class="field">
-            <label for="tank" class="label">Tank</label>
-            <div class="select is-rounded" style="width: max-content;">
-                <select id="tank" name="tank">
-                    <option value="a" {% if pill.tank == 'a' %} selected {% endif %}>A (left)</option>
-                    <option value="b" {% if pill.tank == 'b' %} selected {% endif %}>B (right)</option>
-                </select>
+        <div class="fixed-grid">
+            <div class="grid">
+              <div class="cell">
+                <div class="field">
+                    <label for="name" class="label">Name</label>
+                    <input class="input is-rounded" style="width: max-content;" type="text" id="name" name="name" value="{{ pill.name }}">
+                </div>
+              </div>
+              <div class="cell">
+                <div class="field">
+                    <label for="dosage" class="label">Dosage</label>
+                    <input class="input is-rounded" style="width: max-content;" type="text" id="dosage" name="dosage" value="{{ pill.dosage }}">
+                </div>
+              </div>
+              <div class="cell">
+                <div class="field">
+                    <label for="tank" class="label">Tank</label>
+                    <div class="select is-rounded" style="width: max-content;">
+                        <select id="tank" name="tank">
+                            <option value="a" {% if pill.tank == 'a' %} selected {% endif %}>A (left)</option>
+                            <option value="b" {% if pill.tank == 'b' %} selected {% endif %}>B (right)</option>
+                        </select>
+                    </div>
+                </div>
+              </div>
             </div>
-        </div>
+          </div>
+        
         <button type="submit" class="button is-primary is-rounded mt-3">
             <span class="icon">
                 <i class="fa-solid fa-plus"></i>

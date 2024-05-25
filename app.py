@@ -75,6 +75,17 @@ def edit_schedule(schedule_id):
     pills = Pill.query.all()
     return render_template('edit_schedule.html', schedule=schedule, pills=pills)
 
+@app.route('/clear_schedules', methods=['POST'])
+def clear_schedules():
+    logs = Log.query.all()
+    for log in logs:
+        db.session.delete(log)
+    schedules = Schedule.query.all()
+    for schedule in schedules:
+        db.session.delete(schedule)
+    db.session.commit()
+    return redirect('/')
+
 @app.route('/add_pill', methods=['GET', 'POST'])
 def add_pill():
     if request.method == 'POST':
@@ -122,6 +133,14 @@ def edit_pill(pill_id):
         return redirect('/')
     return render_template('edit_pill.html', pill=pill)
 
+@app.route('/team')
+def team():
+    return render_template('team.html')
+
+@app.route('/project')
+def project():
+    return render_template('project.html')
+
 @app.route('/')
 @app.route('/index.html')
 def index():
@@ -129,15 +148,81 @@ def index():
     pills = Pill.query.all()
     logs = Log.query.all()
     disable_add_schedule = False
+    disable_clear_schedules = False
     disable_clear_logs = False
     are_two_pills = False
+    upcoming_pills = get_upcoming_pills()
+    intake_statuses = {'taken': 0, 'missed': 0}
+    is_pill_dispenser_connected = False
+    last_log = False
+    schedules_bar_chart_data = []
+
+    if len(logs) > 0:
+        last_log = logs[-1]
+        last_log.pill_name = last_log.schedule.pill.name
+        last_log.date = last_log.date_time.strftime('%Y-%m-%d')
+        last_log.time = last_log.date_time.strftime('%H:%M')
+
     if len(pills) == 2:
         are_two_pills = True
     if len(pills) == 0:
         disable_add_schedule = True
     if len(logs) == 0:
         disable_clear_logs = True
-    return render_template('index.html', schedules=schedules, pills=pills, logs=logs, disable_add_schedule=disable_add_schedule, are_two_pills=are_two_pills, disable_clear_logs=disable_clear_logs)
+    if len(schedules) == 0:
+        disable_clear_schedules = False
+
+    for log in logs:
+        intake_statuses[log.intake_status] += 1
+
+    if len(logs) > 0:
+        last_log = logs[-1]
+        last_log.pill_name = last_log.schedule.pill.name
+        last_log.date = last_log.date_time.strftime('%Y-%m-%d')
+        last_log.time = last_log.date_time.strftime('%H:%M')
+    
+    for day in ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']:
+        day_schedules = Schedule.query.filter_by(day=day).all()
+        for schedule in day_schedules:
+            schedules_bar_chart_data.append({
+                'day': day,
+                'pill_name': schedule.pill.name,
+                'quantity': schedule.quantity
+            })
+        # the dictionary should be like this: {'pill_name': [quantity1, quantity2, ...], ...} quantity1 is the quantity of the pill_name for the first schedule of that day that is Monday. If there are no pilla for a day then the quantity should be 0
+    schedules_bar_chart_data_dict = {}
+    for data in schedules_bar_chart_data:
+        if data['pill_name'] not in schedules_bar_chart_data_dict:
+            schedules_bar_chart_data_dict[data['pill_name']] = [0, 0, 0, 0, 0, 0, 0]
+        if data['day'] == 'Monday':
+            schedules_bar_chart_data_dict[data['pill_name']][0] = data['quantity']
+        elif data['day'] == 'Tuesday':
+            schedules_bar_chart_data_dict[data['pill_name']][1] = data['quantity']
+        elif data['day'] == 'Wednesday':
+            schedules_bar_chart_data_dict[data['pill_name']][2] = data['quantity']
+        elif data['day'] == 'Thursday':
+            schedules_bar_chart_data_dict[data['pill_name']][3] = data['quantity']
+        elif data['day'] == 'Friday':
+            schedules_bar_chart_data_dict[data['pill_name']][4] = data['quantity']
+        elif data['day'] == 'Saturday':
+            schedules_bar_chart_data_dict[data['pill_name']][5] = data['quantity']
+        elif data['day'] == 'Sunday':
+            schedules_bar_chart_data_dict[data['pill_name']][6] = data['quantity']
+    schedules_bar_chart_data = schedules_bar_chart_data_dict
+
+    return render_template('index.html', 
+                           schedules=schedules, 
+                           pills=pills, 
+                           logs=logs, 
+                           disable_add_schedule=disable_add_schedule, 
+                           are_two_pills=are_two_pills, 
+                           disable_clear_schedules=disable_clear_schedules, 
+                           disable_clear_logs=disable_clear_logs,
+                           upcoming_pills=upcoming_pills,
+                           intake_statuses=intake_statuses,
+                           is_pill_dispenser_connected=is_pill_dispenser_connected,
+                           last_log=last_log,
+                           schedules_bar_chart_data=schedules_bar_chart_data)
 
 @app.route('/api/now')
 def now():
@@ -184,6 +269,13 @@ def clear_logs():
 
 @app.route('/api/upcoming_pills')
 def upcoming_pills():
+    upcoming_pills = get_upcoming_pills()
+    return {
+        'status': 'success',
+        'upcoming_pills': upcoming_pills[:2]
+    }
+
+def get_upcoming_pills():
     day = datetime.now().strftime('%A')
     time = datetime.now().strftime('%H:%M')
     schedules = Schedule.query.all()
@@ -198,10 +290,7 @@ def upcoming_pills():
                 'time': schedule.time
             })
     upcoming_pills = sorted(upcoming_pills, key=lambda x: x['time'])
-    return {
-        'status': 'success',
-        'upcoming_pills': upcoming_pills[:2]
-    }
+    return upcoming_pills
 
 if __name__ == '__main__':
     # socketio.run(app, debug=True)

@@ -3,8 +3,211 @@
 {% block title %}Dashboard{% endblock %}
 
 {% block body %}
+<section class="mt-6">
+    <h1 class="title">
+        Overview 📊
+    </h1>
+    <div class="is-flex" style="align-items: flex-start; justify-content: center; gap: 35px;">
+        <div class="is-flex is-flex-direction-column" style="gap: 15px;">
+            <!-- Today -->
+            <div class="box is-flex raise" style="gap: 25px; align-items: center;">
+                <span class="is-size-2 has-text-weight-bold" style="height: fit-content;" id="time-now">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M12,4a8,8,0,0,1,7.89,6.7A1.53,1.53,0,0,0,21.38,12h0a1.5,1.5,0,0,0,1.48-1.75,11,11,0,0,0-21.72,0A1.5,1.5,0,0,0,2.62,12h0a1.53,1.53,0,0,0,1.49-1.3A8,8,0,0,1,12,4Z"><animateTransform attributeName="transform" dur="0.75s" repeatCount="indefinite" type="rotate" values="0 12 12;360 12 12"/></path></svg>
+                </span>
+                <div class="is-flex is-flex-direction-column">
+                    <span id="day-today" class="has-text-centered">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M12,4a8,8,0,0,1,7.89,6.7A1.53,1.53,0,0,0,21.38,12h0a1.5,1.5,0,0,0,1.48-1.75,11,11,0,0,0-21.72,0A1.5,1.5,0,0,0,2.62,12h0a1.53,1.53,0,0,0,1.49-1.3A8,8,0,0,1,12,4Z"><animateTransform attributeName="transform" dur="0.75s" repeatCount="indefinite" type="rotate" values="0 12 12;360 12 12"/></path></svg>
+                    </span>
+                    <span id="date-today" class="is-size-3 has-text-centered">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M12,4a8,8,0,0,1,7.89,6.7A1.53,1.53,0,0,0,21.38,12h0a1.5,1.5,0,0,0,1.48-1.75,11,11,0,0,0-21.72,0A1.5,1.5,0,0,0,2.62,12h0a1.53,1.53,0,0,0,1.49-1.3A8,8,0,0,1,12,4Z"><animateTransform attributeName="transform" dur="0.75s" repeatCount="indefinite" type="rotate" values="0 12 12;360 12 12"/></path></svg>
+                    </span>
+                    <span id="month-today" class="has-text-centered">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M12,4a8,8,0,0,1,7.89,6.7A1.53,1.53,0,0,0,21.38,12h0a1.5,1.5,0,0,0,1.48-1.75,11,11,0,0,0-21.72,0A1.5,1.5,0,0,0,2.62,12h0a1.53,1.53,0,0,0,1.49-1.3A8,8,0,0,1,12,4Z"><animateTransform attributeName="transform" dur="0.75s" repeatCount="indefinite" type="rotate" values="0 12 12;360 12 12"/></path></svg>
+                    </span>
+                </div>
+            </div>
+            <!-- Countdown 🕧 -->
+            <div class="box raise">
+                <h2 class="is-size-4 has-text-centered">
+                    <span class="mr-2">Upcoming Pills</span>
+                    <span class="icon is-small">
+                        <i class="fa-solid fa-hourglass-start"></i>
+                    </span>
+                </h2>
+                {% if upcoming_pills %}
+                    <div class="is-flex mt-5" style="gap:50px; justify-content: center;">
+                        {% for pill in upcoming_pills %}
+                            <div>
+                                <span id="timer-{{ pill.schedule_id }}" class="is-inline-block has-text-centered is-size-5 has-text-weight-bold" style="width: 100%;">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M12,4a8,8,0,0,1,7.89,6.7A1.53,1.53,0,0,0,21.38,12h0a1.5,1.5,0,0,0,1.48-1.75,11,11,0,0,0-21.72,0A1.5,1.5,0,0,0,2.62,12h0a1.53,1.53,0,0,0,1.49-1.3A8,8,0,0,1,12,4Z"><animateTransform attributeName="transform" dur="0.75s" repeatCount="indefinite" type="rotate" values="0 12 12;360 12 12"/></path></svg>
+                                </span>
+                                <div>
+                                    <span class="mr-4">{{ pill.quantity }}x {{ pill.pill_name }}</span>
+                                    <span>Tank: {{ pill.tank|upper }}</span>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>            
+                {% else %}
+                    <span class="is-inline-block has-text-centered mt-5" style="width: 100%;">No upcoming pills</span>
+                {% endif %}
+            </div>
+        </div>
+        <!-- Pie Chart -->
+        <div class="box raise">
+            <h2 class="is-size-4 has-text-centered">
+                <span class="mr-2">Pill Intakes</span>
+                <span class="icon is-small">
+                    <i class="fa-regular fa-chart-pie"></i>
+                </span>
+            </h2>
+            {% if logs %}
+                <canvas class="mt-5" id="intake-status-chart" width="200"></canvas>
+            {% else %}
+                <canvas class="mt-5" style="display: none;" id="intake-status-chart" width="200"></canvas>
+                <span class="is-inline-block has-text-centered mt-5" style="width: 100%;">No logs</span>
+            {% endif %}
+        </div>
+        <!-- Pill Dispenser Status -->
+        <div class="box is-flex is-flex-direction-column is-justify-content-center is-align-items-center raise">
+            <h2 class="is-size-4 has-text-centered">
+                <span class="mr-2">Pill Dispenser</span>
+                <span class="icon is-small">
+                    <i class="fa-solid fa-power-off"></i>
+                </span>
+            </h2>
+            {% if is_pill_dispenser_connected %}
+                <div class="is-flex is-flex-direction-column is-justify-content-center is-align-items-center mt-5" 
+                style="padding: 60px; width: 100px; height: 100px; border: 1px solid rgb(72, 199, 142); border-radius: 50%;">
+                    <span class="icon is-large">
+                        <i class="fa-solid fa-wifi" style="color: rgb(72, 199, 142);"></i>
+                    </span>
+                    <span class="has-text-weight-bold" style="color: rgb(72, 199, 142);">Connected</span>
+                </div>
+            {% else %}
+                <div class="is-flex is-flex-direction-column is-justify-content-center is-align-items-center mt-5" 
+                style="padding: 70px; width: 100px; height: 100px; border: 1px solid rgb(255, 102, 133); border-radius: 50%;">
+                    <span class="icon is-large">
+                        <i class="fa-solid fa-wifi" style="color: rgb(255, 102, 133);"></i>
+                    </span>
+                    <span class="has-text-weight-bold" style="color: rgb(255, 102, 133);">Disconnected</span>
+                </div>
+            {% endif %}
+        </div>
+        <!-- Pills -->
+        <div>
+            {% if pills %}
+                <div class="box raise is-flex" style="gap:50px; padding: 20px 50px;">
+                    {% for pill in pills %}
+                        <div class="is-flex is-flex-direction-column" style="justify-content: center; align-items: center;">
+                            <span class="is-size-5 has-text-weight-bold">{{ pill.tank|capitalize }}</span>
+                            <span>{% if pill.tank == 'a' %} Left {% else %} Right {% endif %}</span>
+                            <span class="is-size-4 has-text-weight-bold">{{ pill.name }}</span>
+                            <span>{{ pill.dosage }}</span>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            <!-- Last Pill Intake Status -->
+            <div class="box raise">
+                <h2 class="is-size-4 has-text-centered">
+                    <span class="mr-2">Last Pill</span>
+                    <span class="icon is-small">
+                        <i class="fa-regular fa-clock"></i>
+                    </span>
+                </h2>
+                {% if last_log.intake_status == 'taken' %}
+                    <div class="is-flex mt-5" style="gap:50px">
+                        <div>
+                            <span class="is-inline-block has-text-centered is-size-5 has-text-weight-bold" style="width: 100%;">
+                                <span class="icon is-small">
+                                    <i class="fa-solid fa-check" style="color: rgb(72, 199, 142);"></i>
+                                </span>
+                            </span>
+                            <div class="is-flex" style="gap: 15px">
+                                <span>{{ last_log.intake_status|capitalize }}</span>
+                                <span>{{ last_log.date }}</span>
+                                <span>{{ last_log.time }}</span>
+                                <span>{{ last_log.pill_name }}</span>
+                            </div>
+                        </div>
+                    </div> 
+                {% elif last_log.intake_status == 'missed' %}   
+                    <div class="is-flex mt-5" style="gap:50px">
+                        <div>
+                            <span class="is-inline-block has-text-centered is-size-5 has-text-weight-bold" style="width: 100%;">
+                                <span class="icon is-small">
+                                    <i class="fa-solid fa-times" style="color: rgb(255, 102, 133);"></i>
+                                </span>
+                            </span>
+                            <div class="is-flex" style="gap: 15px">
+                                <span>{{ last_log.intake_status|capitalize }}</span>
+                                <span>{{ last_log.date }}</span>
+                                <span>{{ last_log.time }}</span>
+                                <span>{{ last_log.pill_name }}</span>
+                            </div>
+                        </div>
+                    </div> 
+                {% else %}
+                    <span class="is-inline-block has-text-centered mt-5" style="width: 100%;">No logs</span>
+                {% endif %}        
+            </div>
+        </div>
+    </div>
+    <div class="is-flex" style="align-items: flex-start; justify-content: center; gap: 35px; margin-top: 40px;">
+        <!-- Schedules Bar Chart  -->
+        {% if schedules %}
+            <div class="box raise">
+                <h2 class="is-size-4 has-text-centered">
+                    <span class="mr-2">Schedules</span>
+                    <span class="icon is-small">
+                        <i class="fa-solid fa-chart-column"></i>
+                    </span>
+                </h2>
+                <canvas class="mt-5" id="schedules-bar-chart" width="600"></canvas>
+            </div>
+        {% else %}
+            <canvas class="mt-5" style="display: none;" id="schedules-bar-chart" width="600"></canvas>
+        {% endif %}
+    </div>
+</section>
+
 <section class="mt-6"> 
-    <h1 class="title">Schedules 🗓️</h1>
+    <div class="is-flex is-justify-content-space-between" style="align-items: center;">
+        <h1 class="title">Schedules 🗓️</h1>
+        {% if disable_clear_schedules %}
+        {% else %}
+            <button class="button is-rounded " onclick="document.getElementById('clear-schedule-modal').classList.add('is-active')">
+                <span class="icon">
+                    <i class="fa-solid fa-trash"></i>
+                </span> 
+                <span>
+                    Clear Schedules
+                </span>
+            </button>
+        {% endif %}
+        <!-- Modal -->
+        <div class="modal" id="clear-schedule-modal">
+            <div class="modal-background"></div>
+            <div class="modal-card">
+                <header class="modal-card-head">
+                    <p class="modal-card
+                    -title">Clear Schedules</p>
+                    <button class="delete" aria-label="close" onclick="document.getElementById('modal').classList.remove('is-active')"></button>
+                </header>
+                <section class="modal-card-body">
+                    Are you sure you want to clear all schedules? All logs will be deleted as well.
+                </section>
+                <footer class="modal-card-foot">
+                    <form action="/clear_schedules" method="POST">
+                        <button type="submit" class="button is-danger mr-3">Yes</button>
+                    </form>
+                    <button class="button" onclick="document.getElementById('modal').classList.remove('is-active')">Cancel</button>
+                </footer>
+            </div>
+        </div>
+    </div>
+
     <table class="table is-hoverable is-fullwidth is-bordered">
         <thead>
             <tr>
@@ -66,18 +269,9 @@
 <section class="mt-6">     
     <div class="is-flex is-justify-content-space-between" style="align-items: center;">
         <h1 class="title">Logs 📜</h1>
-        <!-- if disable_clear_logs is true then disable the button -->
         {% if disable_clear_logs %}
-            <button class="button is-danger is-rounded is-light" disabled>
-                <span class="icon">
-                    <i class="fa-solid fa-trash"></i>
-                </span> 
-                <span>
-                    Clear Logs
-                </span>
-            </button>
         {% else %}
-            <button class="button is-danger is-rounded is-light" onclick="document.getElementById('modal').classList.add('is-active')">
+            <button class="button is-rounded " onclick="document.getElementById('clear-logs-modal').classList.add('is-active')">
                 <span class="icon">
                     <i class="fa-solid fa-trash"></i>
                 </span> 
@@ -87,7 +281,7 @@
             </button>
         {% endif %}
         <!-- Modal -->
-        <div class="modal" id="modal">
+        <div class="modal" id="clear-logs-modal">
             <div class="modal-background"></div>
             <div class="modal-card">
                 <header class="modal-card-head">
@@ -139,7 +333,7 @@
 
 <section class="mt-6"> 
     <h1 class="title">Pills 💊</h1>
-    <table  class="table is-hoverable is-bordered">
+    <table  class="table is-hoverable is-fullwidth is-bordered">
         <thead>
             <tr>
                 <th>Name</th>
@@ -194,4 +388,130 @@
     {% endif %}
 
 </section>
+<script>
+
+    // Today's Date and Time
+    function updateDateTime() {
+        const now = new Date();
+
+        const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+        const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+        const dayToday = dayNames[now.getDay()];
+        const dateToday = now.getDate();
+        const monthToday = monthNames[now.getMonth()];
+        const timeNow = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+        document.getElementById('day-today').textContent = dayToday;
+        document.getElementById('date-today').textContent = dateToday;
+        document.getElementById('month-today').textContent = monthToday;
+        document.getElementById('time-now').textContent = timeNow;
+    }
+
+    // Intake Status Chart
+    const intakeStatusChartElement = document.getElementById('intake-status-chart');
+    const taken = {{ intake_statuses.taken }};
+    const missed = {{ intake_statuses.missed }};
+
+    const intakeStatusChart = new Chart(intakeStatusChartElement, {
+        type: 'pie',
+        data: {
+            labels: ['Taken', 'Missed'],
+            datasets: [{
+                label: 'My First Dataset',
+                data: [taken, missed],
+                backgroundColor: [
+                'rgb(72, 199, 142)',
+                'rgb(255, 102, 133)'
+                ],
+                hoverOffset: 4
+            }]
+        }
+    });
+
+    // Schedules Bar Chart
+    const schedulesBarChartElement = document.getElementById('schedules-bar-chart');
+    const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+    const schedulesData = {{ schedules_bar_chart_data|tojson }};
+    const pill1 = Object.keys(schedulesData)[0];
+    const pill2 = Object.keys(schedulesData)[1];
+    const pill1Data = schedulesData[pill1];
+    const pill2Data = schedulesData[pill2];
+    
+    const schedulesBarChart = new Chart(schedulesBarChartElement, {
+        type: 'bar',
+        data: {
+            labels: days,
+            datasets: [
+                {
+                    label: pill1,
+                    data: pill1Data,
+                    backgroundColor: 'rgb(72, 199, 142)',
+                    borderColor: 'rgb(72, 199, 142)',
+                    borderWidth: 1
+                },
+                {
+                    label: pill2,
+                    data: pill2Data,
+                    backgroundColor: '#00203FFF',
+                    borderColor: '#ADEFD1FF',
+                    borderWidth: 1
+                }
+            ]
+        },
+        options: {
+            scales: {
+                y: {
+                    ticks: {
+                        stepSize: 1,
+                        callback: function(value) {
+                            return Number.isInteger(value) ? value : null;
+                        }
+                    }
+                }
+            }
+        }
+
+    });
+
+    
+    // Countdown Timer
+    function startCountdown(id, pillTime) {
+        var countDownDate = new Date();
+        var hours = pillTime.split(":")[0];
+        var minutes = pillTime.split(":")[1];
+        countDownDate.setHours(hours);
+        countDownDate.setMinutes(minutes);
+        countDownDate.setSeconds(0);
+
+        var x = setInterval(function() {
+            var now = new Date().getTime();
+            var distance = countDownDate - now;
+            var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+            var time = hours ? hours + "h " : ""
+            time += minutes + "m " + seconds + "s ";
+            document.getElementById(id).innerHTML = time;
+            if (distance < 0) {
+                clearInterval(x);
+                document.getElementById(id).innerHTML = "EXPIRED";
+            }
+        }, 1000);
+    }
+
+    function startCountdownsForPills() {
+        {% for pill in upcoming_pills %}
+            var id = "timer-{{ pill.schedule_id }}"; 
+            var pillTime = "{{ pill.time }}"; 
+            startCountdown(id, pillTime); 
+        {% endfor %}
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        updateDateTime();
+        setInterval(updateDateTime, 30000) // Update every 30 seconds
+        startCountdownsForPills()
+    })
+</script>
 {% endblock %}

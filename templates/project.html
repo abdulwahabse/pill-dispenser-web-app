@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+
+{% block title %}Project{% endblock %}
+
+{% block body %}
+
+<section class="mt-6"> 
+    <h1 class="title is-2">Project Description</h1>
+
+    <h2 class="title is-3">Introduction</h2>
+    <p>
+        Medication plays a great role in the lives of almost everyone. We probably all have had or wanted to take
+        some kind of pills whether its something for a serious condition or just vitamins. Modern medicine does a
+        good job of improving peoples health but in order for the medication to do so the patient often has to take
+        pills in a scheduled manner.
+        Here is where the problem arises, during the busy day to day life one easily makes a mistake - forgetting to
+        take the pills entirely, taking the wrong dosage, taking them at the wrong time or even taking the wrong
+        pills can happen to everyone. Especially for the elderly or mentally impaired people. Of course there are
+        systems and devices that can help you out in maintaining the schedule but most of them require a great
+        amount of preparation work and are still susceptible to user mistakes.
+        With our project, we contribute by elaborating an interactive system that can set up schedules for medication,
+        automatically dispense pills and reminds the user to take them at the right point of time. Unlike other systems
+        for pill scheduling where the user has to constantly manually prepare their daily dosages, our system can
+        automatically dispense the right combination of pills in a scheduled manner. Moreover it is capable of
+        reminding the user in case the medication has not been taken in time.
+    </p>
+
+    <h2 class="title is-3 mt-5">Pseudo evaluation</h2>
+    <h3 class="title is-4 mt-2">Evaluation Method</h3>
+    <p>
+        To evaluate the system, we will conduct a small user-testing session with 2-3 participants who are not part
+        of the project development team. Each participant will interact with the system, performing specific tasks
+        to evaluate its performance. We will use a combination of performance measurements and questionnaires to
+        gather data.
+    </p>
+
+    <h3 class="title is-4 mt-5">Evaluation Questions and Methods</h3>
+    <p>
+        To understand the technical strengths and limitations of the system, participants will use the dispenser
+        according to a preset schedule. They will interact with the Nextion LCD to confirm pill intake and observe
+        feedback from the IR sensors. Additionally, they will use the web and mobile applications to interact with the
+        system, check schedules, and receive notifications. After using the system, participants will answer questions
+        about their experience. The questionnaire will focus on the usability of the Nextion LCD, the responsiveness
+        of the system, the effectiveness of the web and mobile applications, and any issues encountered. Questions
+        will include topics such as the ease of understanding the LCD information, any issues faced, responsiveness
+        of the system, the user experience with the web and mobile applications, and suggestions for improvements.
+        <br>
+        For assessing the accuracy of the pill dispensing mechanism and the reliability of the IR sensor detection,
+        we will measure the performance by comparing the number of pills dispensed to the number scheduled.
+        Participants will observe the dispensing process and note any discrepancies. Performance metrics will include
+        the dispensing accuracy, which is the percentage of pills correctly dispensed compared to the scheduled
+        number, and the IR sensor detection reliability, which is the percentage of pills successfully detected by the
+        IR sensors out of the total pills dispensed.
+    </p>
+
+    <h3 class="title is-4 mt-5">Evaluation Procedure</h3>
+    <p>
+        The evaluation procedure will begin with setting up the system, ensuring it is configured with a schedule to
+        dispense pills at specific times and connected to the server for time synchronization and schedule updates.
+        Participants will then observe the Nextion LCD for pill schedule information, confirm pill intake using the LCD, and watch the dispensing mechanism. They will note the number of pills dispensed and the IR sensor
+        detection feedback. Additionally, participants will interact with the web and mobile applications to check
+        schedules, receive notifications, and confirm pill intake.
+        <br>
+        After the user testing, we will collect responses from the questionnaires and record performance metrics
+        for dispensing accuracy and IR sensor detection reliability. Analyzing the questionnaire responses will help
+        identify the strengths and limitations of the system. At the same time, the performance metrics will provide
+        quantitative data on the accuracy and reliability of the dispensing mechanism.
+    </p>
+    
+</section>
+
+{% endblock %}

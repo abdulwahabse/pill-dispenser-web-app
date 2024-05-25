@@ -27,33 +27,125 @@
 	>
 	<!-- Socket -->
 	<script src="{{ url_for('static', filename='scripts/socket.io.min.js') }}"></script>
+	<!-- Chart.js -->
+	<script src="{{ url_for('static', filename='scripts/chartjs/dist/chart.umd.js') }}"></script>
 </head>
 
 <body>
 
-<main id="container" class="container is-fluid">
-  {% block body %}
-  {% endblock %}
-</main>
+	<nav class="navbar is-primary" role="navigation" aria-label="main navigation">
+		<div class="navbar-brand">
+			<a class="navbar-item" href="/">
+				<span class="icon is-large">
+					<i class="fa-solid fa-pills"></i>
+				</span>
+				<span class="logo-title">Pill Dispenser</span>
+			</a>
+			<a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
+				<span aria-hidden="true"></span>
+				<span aria-hidden="true"></span>
+				<span aria-hidden="true"></span>
+			</a>
+		</div>
+		<div id="navbarBasicExample" class="navbar-menu">
+			<div class="navbar-end">
+				<a class="navbar-item" href="/">
+					Dashboard
+				</a>
+				<a class="navbar-item" href="/team">
+					Team
+				</a>
+				<a class="navbar-item" href="/project">
+					Project
+				</a>
 
-<footer class="footer mt-6">
-	<div class="content has-text-centered">
-		<p>
-			Copyright © 2024 Pill Dispenser
-			<br>
-			Interactive Systems
-		</p>
-	</div>
-</footer>
+				<a class="navbar-item" onclick="toggleTheme()">
+					<span class="icon">
+						<i class="fa-solid" id="theme-icon"></i>
+					</span>
+				</a>
 
-<script>
-	const socket = io();
+			</div>
+		</div>
+	</nav>
 
-	socket.on('database_updated', function(data) {
-		console.log(data.message);
-		location.reload();
-	});
-</script>
+	<main id="container" class="container is-fluid">
+	{% block body %}
+	{% endblock %}
+	</main>
+
+	<div class="cover"></div>
+
+
+	<footer class="footer">
+		<div class="content has-text-centered">
+			<p>
+				Copyright © 2024 Pill Dispenser
+				<br>
+				Interactive Systems
+			</p>
+		</div>
+	</footer>
+
+	<script>
+		// Socket
+		const socket = io();
+
+		socket.on('database_updated', function(data) {
+			console.log(data.message);
+			location.reload();
+		});
+
+		// Toggle the "is-active" class on both the "navbar-burger" and the "navbar-menu"
+		document.addEventListener('DOMContentLoaded', () => {
+			const $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
+
+			if ($navbarBurgers.length > 0) {
+				$navbarBurgers.forEach(el => {
+					el.addEventListener('click', () => {
+						const target = el.dataset.target;
+						const $target = document.getElementById(target);
+
+						el.classList.toggle('is-active');
+						$target.classList.toggle('is-active');
+					});
+				});
+			}
+
+			// Apply the saved theme preference
+			applySavedTheme();
+		});
+
+		// Apply the saved theme preference from localStorage
+		function applySavedTheme() {
+			const savedTheme = localStorage.getItem('theme') || 'light';
+			document.documentElement.dataset.theme = savedTheme;
+			updateThemeIcon();
+		}
+
+		// Theme toggle function
+		function toggleTheme() {
+			const currentTheme = document.documentElement.dataset.theme;
+			const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+			document.documentElement.dataset.theme = newTheme;
+			localStorage.setItem('theme', newTheme); // Save the new theme in localStorage
+			updateThemeIcon();
+		}
+
+		// Update the theme icon
+		function updateThemeIcon() {
+			const currentTheme = document.documentElement.dataset.theme;
+			const themeIcon = document.getElementById('theme-icon');
+			if (currentTheme === 'dark') {
+				themeIcon.classList.add('fa-sun');
+				themeIcon.classList.remove('fa-moon');
+			} else {
+				themeIcon.classList.add('fa-moon');
+				themeIcon.classList.remove('fa-sun');
+			}
+		}
+
+	</script>
 
 </body>
 </html>
