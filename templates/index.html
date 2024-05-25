@@ -486,16 +486,20 @@
 
         var x = setInterval(function() {
             var now = new Date().getTime();
+            var now2 = new Date();
             var distance = countDownDate - now;
             var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
             var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
             var seconds = Math.floor((distance % (1000 * 60)) / 1000);
-            var time = hours ? hours + "h " : ""
-            time += minutes + "m " + seconds + "s ";
+            var time = hours ? hours + "h " : "";
+            time += minutes ? minutes + "m " : "";
+            time += seconds + "s ";
             document.getElementById(id).innerHTML = time;
+            const timeNow = now2.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            document.getElementById('time-now').textContent = timeNow;
             if (distance < 0) {
                 clearInterval(x);
-                document.getElementById(id).innerHTML = "EXPIRED";
+                document.getElementById(id).innerHTML = "Take Pill Now";
             }
         }, 1000);
     }
@@ -510,7 +514,6 @@
 
     document.addEventListener('DOMContentLoaded', function() {
         updateDateTime();
-        setInterval(updateDateTime, 30000) // Update every 30 seconds
         startCountdownsForPills()
     })
 </script>
