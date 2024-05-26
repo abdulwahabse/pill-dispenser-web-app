@@ -10,7 +10,7 @@
     <div class="is-flex" style="align-items: flex-start; justify-content: center; gap: 35px;">
         <div class="is-flex is-flex-direction-column" style="gap: 15px;">
             <!-- Today -->
-            <div class="box is-flex raise" style="gap: 25px; align-items: center;">
+            <div class="box is-flex raise" style="gap: 25px; align-items: center; justify-content: space-around;">
                 <span class="is-size-2 has-text-weight-bold" style="height: fit-content;" id="time-now">
                     <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M12,4a8,8,0,0,1,7.89,6.7A1.53,1.53,0,0,0,21.38,12h0a1.5,1.5,0,0,0,1.48-1.75,11,11,0,0,0-21.72,0A1.5,1.5,0,0,0,2.62,12h0a1.53,1.53,0,0,0,1.49-1.3A8,8,0,0,1,12,4Z"><animateTransform attributeName="transform" dur="0.75s" repeatCount="indefinite" type="rotate" values="0 12 12;360 12 12"/></path></svg>
                 </span>
@@ -53,21 +53,68 @@
                 {% endif %}
             </div>
         </div>
-        <!-- Pie Chart -->
+
+        <div class="is-flex is-flex-direction-column" style="gap: 15px;">
+            <!-- Pills -->
+            {% if pills %}
+            <div class="box raise is-flex" style="gap:50px; padding: 20px 50px;">
+                {% for pill in pills %}
+                    <div class="is-flex is-flex-direction-column" style="justify-content: center; align-items: center;">
+                        <span class="is-size-5 has-text-weight-bold">{{ pill.tank|capitalize }}</span>
+                        <span>{% if pill.tank == 'a' %} Left {% else %} Right {% endif %}</span>
+                        <span class="is-size-4 has-text-weight-bold">{{ pill.name }}</span>
+                        <span>{{ pill.dosage }}</span>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        <!-- Last Pill Intake Status -->
         <div class="box raise">
             <h2 class="is-size-4 has-text-centered">
-                <span class="mr-2">Pill Intakes</span>
+                <span class="mr-2">Last Pill</span>
                 <span class="icon is-small">
-                    <i class="fa-regular fa-chart-pie"></i>
+                    <i class="fa-regular fa-clock"></i>
                 </span>
             </h2>
-            {% if logs %}
-                <canvas class="mt-5" id="intake-status-chart" width="200"></canvas>
+            {% if last_log.intake_status == 'taken' %}
+                <div class="is-flex mt-5" style="gap:50px">
+                    <div>
+                        <span class="is-inline-block has-text-centered is-size-5 has-text-weight-bold" style="width: 100%;">
+                            <span class="icon is-small">
+                                <i class="fa-solid fa-check" style="color: rgb(72, 199, 142);"></i>
+                            </span>
+                        </span>
+                        <div class="is-flex" style="gap: 15px">
+                            <span>{{ last_log.intake_status|capitalize }}</span>
+                            <span>{{ last_log.date }}</span>
+                            <span>{{ last_log.time }}</span>
+                            <span>{{ last_log.pill_name }}</span>
+                        </div>
+                    </div>
+                </div> 
+            {% elif last_log.intake_status == 'missed' %}   
+                <div class="is-flex mt-5" style="gap:50px">
+                    <div>
+                        <span class="is-inline-block has-text-centered is-size-5 has-text-weight-bold" style="width: 100%;">
+                            <span class="icon is-small">
+                                <i class="fa-solid fa-times" style="color: rgb(255, 102, 133);"></i>
+                            </span>
+                        </span>
+                        <div class="is-flex" style="gap: 15px">
+                            <span>{{ last_log.intake_status|capitalize }}</span>
+                            <span>{{ last_log.date }}</span>
+                            <span>{{ last_log.time }}</span>
+                            <span>{{ last_log.pill_name }}</span>
+                        </div>
+                    </div>
+                </div> 
             {% else %}
-                <canvas class="mt-5" style="display: none;" id="intake-status-chart" width="200"></canvas>
                 <span class="is-inline-block has-text-centered mt-5" style="width: 100%;">No logs</span>
-            {% endif %}
+            {% endif %}        
         </div>
+        </div>
+        
+        
         <!-- Pill Dispenser Status -->
         <div class="box is-flex is-flex-direction-column is-justify-content-center is-align-items-center raise">
             <h2 class="is-size-4 has-text-centered">
@@ -94,81 +141,41 @@
                 </div>
             {% endif %}
         </div>
-        <!-- Pills -->
-        <div>
-            {% if pills %}
-                <div class="box raise is-flex" style="gap:50px; padding: 20px 50px;">
-                    {% for pill in pills %}
-                        <div class="is-flex is-flex-direction-column" style="justify-content: center; align-items: center;">
-                            <span class="is-size-5 has-text-weight-bold">{{ pill.tank|capitalize }}</span>
-                            <span>{% if pill.tank == 'a' %} Left {% else %} Right {% endif %}</span>
-                            <span class="is-size-4 has-text-weight-bold">{{ pill.name }}</span>
-                            <span>{{ pill.dosage }}</span>
-                        </div>
-                    {% endfor %}
-                </div>
-            {% endif %}
-            <!-- Last Pill Intake Status -->
-            <div class="box raise">
-                <h2 class="is-size-4 has-text-centered">
-                    <span class="mr-2">Last Pill</span>
-                    <span class="icon is-small">
-                        <i class="fa-regular fa-clock"></i>
-                    </span>
-                </h2>
-                {% if last_log.intake_status == 'taken' %}
-                    <div class="is-flex mt-5" style="gap:50px">
-                        <div>
-                            <span class="is-inline-block has-text-centered is-size-5 has-text-weight-bold" style="width: 100%;">
-                                <span class="icon is-small">
-                                    <i class="fa-solid fa-check" style="color: rgb(72, 199, 142);"></i>
-                                </span>
-                            </span>
-                            <div class="is-flex" style="gap: 15px">
-                                <span>{{ last_log.intake_status|capitalize }}</span>
-                                <span>{{ last_log.date }}</span>
-                                <span>{{ last_log.time }}</span>
-                                <span>{{ last_log.pill_name }}</span>
-                            </div>
-                        </div>
-                    </div> 
-                {% elif last_log.intake_status == 'missed' %}   
-                    <div class="is-flex mt-5" style="gap:50px">
-                        <div>
-                            <span class="is-inline-block has-text-centered is-size-5 has-text-weight-bold" style="width: 100%;">
-                                <span class="icon is-small">
-                                    <i class="fa-solid fa-times" style="color: rgb(255, 102, 133);"></i>
-                                </span>
-                            </span>
-                            <div class="is-flex" style="gap: 15px">
-                                <span>{{ last_log.intake_status|capitalize }}</span>
-                                <span>{{ last_log.date }}</span>
-                                <span>{{ last_log.time }}</span>
-                                <span>{{ last_log.pill_name }}</span>
-                            </div>
-                        </div>
-                    </div> 
-                {% else %}
-                    <span class="is-inline-block has-text-centered mt-5" style="width: 100%;">No logs</span>
-                {% endif %}        
-            </div>
-        </div>
+        
     </div>
     <div class="is-flex" style="align-items: flex-start; justify-content: center; gap: 35px; margin-top: 40px;">
+        <!-- Pie Chart -->
+        <div class="box raise">
+            <h2 class="is-size-4 has-text-centered">
+                <span class="mr-2">Pill Intakes</span>
+                <span class="icon is-small">
+                    <i class="fa-regular fa-chart-pie"></i>
+                </span>
+            </h2>
+            {% if logs %}
+                <canvas class="mt-5" id="intake-status-chart" width="200"></canvas>
+            {% else %}
+                <canvas class="mt-5" style="display: none;" id="intake-status-chart" width="200"></canvas>
+                <span class="is-inline-block has-text-centered mt-5" style="width: 100%;">No logs</span>
+            {% endif %}
+        </div>
         <!-- Schedules Bar Chart  -->
-        {% if schedules %}
-            <div class="box raise">
-                <h2 class="is-size-4 has-text-centered">
-                    <span class="mr-2">Schedules</span>
-                    <span class="icon is-small">
-                        <i class="fa-solid fa-chart-column"></i>
-                    </span>
-                </h2>
-                <canvas class="mt-5" id="schedules-bar-chart" width="600"></canvas>
-            </div>
-        {% else %}
-            <canvas class="mt-5" style="display: none;" id="schedules-bar-chart" width="600"></canvas>
-        {% endif %}
+        <div class="box raise">
+            <h2 class="is-size-4 has-text-centered">
+                <span class="mr-2">Schedules</span>
+                <span class="icon is-small">
+                    <i class="fa-solid fa-chart-column"></i>
+                </span>
+            </h2>
+            {% if schedules %}
+                <canvas class="mt-5" id="schedules-bar-chart" width="450"></canvas>
+            {% else %}
+                <canvas class="mt-5" style="display: none;" id="schedules-bar-chart" width="600"></canvas>
+                <span class="is-inline-block has-text-centered mt-5" style="width: 100%;">No schedules</span>
+            {% endif %}
+        </div>
+        
+    
     </div>
 </section>
 
