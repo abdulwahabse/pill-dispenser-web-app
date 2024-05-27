@@ -123,23 +123,15 @@
                     <i class="fa-solid fa-power-off"></i>
                 </span>
             </h2>
-            {% if is_pill_dispenser_connected %}
-                <div class="is-flex is-flex-direction-column is-justify-content-center is-align-items-center mt-5" 
-                style="padding: 60px; width: 100px; height: 100px; border: 1px solid rgb(72, 199, 142); border-radius: 50%;">
-                    <span class="icon is-large">
-                        <i class="fa-solid fa-wifi" style="color: rgb(72, 199, 142);"></i>
-                    </span>
-                    <span class="has-text-weight-bold" style="color: rgb(72, 199, 142);">Connected</span>
-                </div>
-            {% else %}
-                <div class="is-flex is-flex-direction-column is-justify-content-center is-align-items-center mt-5" 
-                style="padding: 70px; width: 100px; height: 100px; border: 1px solid rgb(255, 102, 133); border-radius: 50%;">
-                    <span class="icon is-large">
-                        <i class="fa-solid fa-wifi" style="color: rgb(255, 102, 133);"></i>
-                    </span>
-                    <span class="has-text-weight-bold" style="color: rgb(255, 102, 133);">Disconnected</span>
-                </div>
-            {% endif %}
+            <div id="pill-dispenser-connection-container" class="is-flex is-flex-direction-column is-justify-content-center is-align-items-center mt-5" 
+            style="padding: 70px; width: 100px; height: 100px; border: 1px solid black; border-radius: 50%;">
+                <span class="icon is-large">
+                    <i id="pill-dispenser-connection-icon" class="fa-solid fa-wifi"></i>
+                </span>
+                <span id="pill-dispenser-connection-text" class="has-text-weight-bold">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M12,4a8,8,0,0,1,7.89,6.7A1.53,1.53,0,0,0,21.38,12h0a1.5,1.5,0,0,0,1.48-1.75,11,11,0,0,0-21.72,0A1.5,1.5,0,0,0,2.62,12h0a1.53,1.53,0,0,0,1.49-1.3A8,8,0,0,1,12,4Z"><animateTransform attributeName="transform" dur="0.75s" repeatCount="indefinite" type="rotate" values="0 12 12;360 12 12"/></path></svg>
+                </span>
+            </div>
         </div>
         
     </div>
@@ -523,5 +515,31 @@
         updateDateTime();
         startCountdownsForPills()
     })
+
+    // Pill Dispenser Connection Status
+    function updatePillDispenserStatus() {
+        const pillDispenserConnectionContainer = document.getElementById('pill-dispenser-connection-container');
+        const pillDispenserConnectionIcon = document.getElementById('pill-dispenser-connection-icon');
+        const pillDispenserConnectionText = document.getElementById('pill-dispenser-connection-text');
+
+        fetch('/api/dispenser_connection_status')
+            .then(response => response.json())
+            .then(data => {
+                if (data.message === 'connected') {
+                    pillDispenserConnectionContainer.style.borderColor = 'rgb(72, 199, 142)';
+                    pillDispenserConnectionIcon.style.color = 'rgb(72, 199, 142)';
+                    pillDispenserConnectionText.style.color = 'rgb(72, 199, 142)';
+                    pillDispenserConnectionText.textContent = 'Connected';
+                } else {
+                    pillDispenserConnectionContainer.style.borderColor = 'rgb(255, 102, 133)';
+                    pillDispenserConnectionIcon.style.color = 'rgb(255, 102, 133)';
+                    pillDispenserConnectionText.style.color = 'rgb(255, 102, 133)';
+                    pillDispenserConnectionText.textContent = 'Disconnected';
+                }
+            })
+    }
+
+    updatePillDispenserStatus()
+    setInterval(updatePillDispenserStatus, 1000)
 </script>
 {% endblock %}

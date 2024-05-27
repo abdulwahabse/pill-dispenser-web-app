@@ -1,8 +1,8 @@
 import eventlet
 eventlet.monkey_patch()  
 
-from datetime import datetime
-from flask import Flask, render_template, request, redirect
+from datetime import datetime, timedelta
+from flask import Flask, render_template, request, redirect, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_socketio import SocketIO, emit
 
@@ -291,6 +291,26 @@ def get_upcoming_pills():
             })
     upcoming_pills = sorted(upcoming_pills, key=lambda x: x['time'])
     return upcoming_pills
+
+# Store the last heartbeat time
+last_heartbeat = None
+
+@app.route('/api/heartbeat', methods=['POST'])
+def heartbeat():
+    global last_heartbeat
+    last_heartbeat = datetime.utcnow()
+    return {
+        "status": "success",  
+        "message": "heartbeat received"
+    }
+
+@app.route('/api/dispenser_connection_status', methods=['GET'])
+def status():
+    global last_heartbeat
+    if last_heartbeat and datetime.utcnow() - last_heartbeat < timedelta(seconds=10):
+        return jsonify({ "status": "success", "message": "connected"}), 200
+    else:
+        return jsonify({ "status": "success", "message": "disconnected"}), 200
 
 if __name__ == '__main__':
    socketio.run(app, debug=True)
