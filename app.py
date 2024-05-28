@@ -110,7 +110,6 @@ def add_pill():
 
 @app.route('/delete_pill/<int:pill_id>', methods=['POST'])
 def delete_pill(pill_id):
-    # if pill_id is used in Schedule then find the schedules associated with that pill_id and find the logs associated with those schedules and delete them first. Then delete that schedule. Then delete the pill
     schedules = Schedule.query.filter_by(pill_id=pill_id).all()
     for schedule in schedules:
         logs = Log.query.filter_by(schedule_id=schedule.id).all()
@@ -189,7 +188,7 @@ def index():
                 'pill_name': schedule.pill.name,
                 'quantity': schedule.quantity
             })
-        # the dictionary should be like this: {'pill_name': [quantity1, quantity2, ...], ...} quantity1 is the quantity of the pill_name for the first schedule of that day that is Monday. If there are no pilla for a day then the quantity should be 0
+            
     schedules_bar_chart_data_dict = {}
     for data in schedules_bar_chart_data:
         if data['pill_name'] not in schedules_bar_chart_data_dict:
@@ -313,5 +312,5 @@ def status():
         return jsonify({ "status": "success", "message": "disconnected"}), 200
 
 if __name__ == '__main__':
-   socketio.run(app, debug=True)
-   # socketio.run(app, debug=True, host='0.0.0.0')
+   # socketio.run(app, debug=True)
+   socketio.run(app, debug=True, host='0.0.0.0')
