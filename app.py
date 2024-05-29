@@ -152,7 +152,6 @@ def index():
     are_two_pills = False
     upcoming_pills = get_upcoming_pills()
     intake_statuses = {'taken': 0, 'missed': 0}
-    is_pill_dispenser_connected = False
     last_log = False
     schedules_bar_chart_data = []
 
@@ -219,7 +218,6 @@ def index():
                            disable_clear_logs=disable_clear_logs,
                            upcoming_pills=upcoming_pills,
                            intake_statuses=intake_statuses,
-                           is_pill_dispenser_connected=is_pill_dispenser_connected,
                            last_log=last_log,
                            schedules_bar_chart_data=schedules_bar_chart_data)
 
@@ -266,7 +264,7 @@ def clear_logs():
     db.session.commit()
     return redirect('/')
 
-@app.route('/api/upcoming_pills')
+@app.route('/api/upcoming_pills', methods=['GET'])
 def upcoming_pills():
     upcoming_pills = get_upcoming_pills()
     return {
@@ -312,5 +310,8 @@ def status():
         return jsonify({ "status": "success", "message": "disconnected"}), 200
 
 if __name__ == '__main__':
-   # socketio.run(app, debug=True)
-   socketio.run(app, debug=True, host='0.0.0.0')
+   # For running the server on the local machine use the following command 
+   socketio.run(app, debug=True)
+
+   # For running the server on the local network use the following command (For BBB ⬇️)
+   # socketio.run(app, debug=True, host='0.0.0.0')
