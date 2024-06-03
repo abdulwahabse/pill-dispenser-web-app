@@ -14,16 +14,16 @@ socketio = SocketIO(app)
 
 class Pill(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False)
-    dosage = db.Column(db.String(20), nullable=False)
-    tank = db.Column(db.String(1), nullable=False, default='a')
+    name = db.Column(db.String(100), nullable=False) 
+    dosage = db.Column(db.String(20), nullable=False) # '1mg', '2mg', '3mg', '4mg', '5mg'
+    tank = db.Column(db.String(1), nullable=False, default='a') # 'a', 'b'
     schedules = db.relationship('Schedule', backref='pill', lazy=True)
 
 class Schedule(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    day = db.Column(db.String(10), nullable=False)
-    time = db.Column(db.String(5), nullable=False)
-    quantity = db.Column(db.Integer, nullable=False, default=1)
+    day = db.Column(db.String(10), nullable=False) # 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'
+    time = db.Column(db.String(5), nullable=False) # '09:00', '12:00', '15:00', '18:00', '21:00'
+    quantity = db.Column(db.Integer, nullable=False, default=1) # 1, 2, 3, 4, 5
     pill_id = db.Column(db.Integer, db.ForeignKey('pill.id'), nullable=False)
     logs = db.relationship('Log', backref='schedule', lazy=True)
 
@@ -40,9 +40,9 @@ with app.app_context():
 @app.route('/add_schedule', methods=['GET', 'POST'])
 def add_schedule():
     if request.method == 'POST':
-        day = request.form['day']
-        time = request.form['time']
-        quantity = request.form['quantity']
+        day = request.form['day'] 
+        time = request.form['time']  
+        quantity = request.form['quantity'] 
         pill_id = request.form['pill_id']
         new_schedule = Schedule(day=day, time=time, quantity=quantity, pill_id=pill_id)
         db.session.add(new_schedule)
@@ -53,7 +53,6 @@ def add_schedule():
 
 @app.route('/delete_schedule/<int:schedule_id>', methods=['POST'])
 def delete_schedule(schedule_id):
-    # if schedule_id is used then delete all the logs associated with that schedule_id first then delete the schedule
     logs = Log.query.filter_by(schedule_id=schedule_id).all()
     for log in logs:
         db.session.delete(log)
@@ -242,7 +241,6 @@ def logs():
     data = request.get_json()
     if 'intake_status' not in data or 'schedule_id' not in data:
         return {'status': 'error', 'message': 'missing status or schedule_id'}, 400
-    # if schedule_id is not found in the database then return HTTP code 404
     if not Schedule.query.get(data['schedule_id']):
         return {'status': 'error', 'message': 'schedule_id not found'}, 404
     new_log = Log(intake_status=data['intake_status'], schedule_id=data['schedule_id'])
@@ -264,6 +262,76 @@ def clear_logs():
     db.session.commit()
     return redirect('/')
 
+@app.route('/api/schedules', methods=['GET'])
+def schedules():
+    schedules = Schedule.query.all()
+    return {
+        'status': 'success',
+        'schedules': [{
+            'id': schedule.id,
+            'day': schedule.day,
+            'time': schedule.time,
+            'quantity': schedule.quantity,
+            'pill_name': schedule.pill.name
+        } for schedule in schedules]
+    }
+
+@app.route('/api/schedules', methods=['POST'])
+def add_schedule_api():
+    data = request.get_json()
+    if 'day' not in data or 'time' not in data or 'quantity' not in data or 'pill_id' not in data:
+        return {'status': 'error', 'message': 'missing day, time, quantity or pill_id'}, 400
+    if not Pill.query.get(data['pill_id']):
+        return {'status': 'error', 'message': 'pill_id not found'}, 404
+    new_schedule = Schedule(day=data['day'], time=data['time'], quantity=data['quantity'], pill_id=data['pill_id'])
+    db.session.add(new_schedule)
+    db.session.commit()
+    socketio.emit('database_updated', {'message': 'Schedule added'})
+    return {'status': 'success', 'message': 'schedule added successfully'}
+
+@app.route('/api/schedules/<int:schedule_id>', methods=['PATCH'])
+def modify_schedule(schedule_id):
+    schedule = Schedule.query.get(schedule_id)
+    if not schedule:
+        return {'status': 'error', 'message': 'schedule_id not found'}, 404
+    data = request.get_json()
+    if 'day' in data:
+        schedule.day = data['day']
+    if 'time' in data:
+        schedule.time = data['time']
+    if 'quantity' in data:
+        schedule.quantity = data['quantity']
+    if 'pill_id' in data:
+        schedule.pill_id = data['pill_id']
+    db.session.commit()
+    socketio.emit('database_updated', {'message': 'Schedule modified'})
+    return {'status': 'success', 'message': 'schedule modified successfully'}
+
+@app.route('/api/schedules/<int:schedule_id>', methods=['DELETE'])
+def delete_schedule_api(schedule_id):
+    schedule = Schedule.query.get(schedule_id)
+    if not schedule:
+        return {'status': 'error', 'message': 'schedule_id not found'}, 404
+    logs = Log.query.filter_by(schedule_id=schedule_id).all()
+    for log in logs:
+        db.session.delete(log)
+    db.session.delete(schedule)
+    db.session.commit()
+    socketio.emit('database_updated', {'message': 'Schedule deleted'})
+    return {'status': 'success', 'message': 'schedule deleted successfully'}
+
+@app.route('/api/clear_schedules', methods=['POST'])
+def clear_schedules_api():
+    logs = Log.query.all()
+    for log in logs:
+        db.session.delete(log)
+    schedules = Schedule.query.all()
+    for schedule in schedules:
+        db.session.delete(schedule)
+    db.session.commit()
+    socketio.emit('database_updated', {'message': 'Schedules cleared'})
+    return {'status': 'success', 'message': 'schedules cleared successfully'}
+
 @app.route('/api/upcoming_pills', methods=['GET'])
 def upcoming_pills():
     upcoming_pills = get_upcoming_pills()
@@ -271,6 +339,66 @@ def upcoming_pills():
         'status': 'success',
         'upcoming_pills': upcoming_pills[:2]
     }
+
+@app.route('/api/pills', methods=['GET'])
+def pills():
+    pills = Pill.query.all()
+    return {
+        'status': 'success',
+        'pills': [{
+            'id': pill.id,
+            'name': pill.name,
+            'dosage': pill.dosage,
+            'tank': pill.tank
+        } for pill in pills]
+    }
+
+@app.route('/api/pills', methods=['POST'])
+def add_pill_api():
+    data = request.get_json()
+    if 'name' not in data or 'dosage' not in data or 'tank' not in data:
+        return {'status': 'error', 'message': 'missing name, dosage or tank'}, 400
+    if Pill.query.filter_by(tank=data['tank']).first():
+        return {'status': 'error', 'message': 'tank already taken'}, 400
+    if len(Pill.query.all()) == 2:
+        return {'status': 'error', 'message': 'two pills already exist'}, 400
+    new_pill = Pill(name=data['name'], dosage=data['dosage'], tank=data['tank'])
+    db.session.add(new_pill)
+    db.session.commit()
+    socketio.emit('database_updated', {'message': 'Pill added'})
+    return {'status': 'success', 'message': 'pill added successfully'}
+
+@app.route('/api/pills/<int:pill_id>', methods=['PATCH'])
+def modify_pill(pill_id):
+    pill = Pill.query.get(pill_id)
+    if not pill:
+        return {'status': 'error', 'message': 'pill_id not found'}, 404
+    data = request.get_json()
+    if 'name' in data:
+        pill.name = data['name']
+    if 'dosage' in data:
+        pill.dosage = data['dosage']
+    if 'tank' in data:
+        pill.tank = data['tank']
+    db.session.commit()
+    socketio.emit('database_updated', {'message': 'Pill modified'})
+    return {'status': 'success', 'message': 'pill modified successfully'}
+
+@app.route('/api/pills/<int:pill_id>', methods=['DELETE'])
+def delete_pill_api(pill_id):
+    if not Pill.query.get(pill_id):
+        return {'status': 'error', 'message': 'pill_id not found'}, 404
+    schedules = Schedule.query.filter_by(pill_id=pill_id).all()
+    for schedule in schedules:
+        logs = Log.query.filter_by(schedule_id=schedule.id).all()
+        for log in logs:
+            db.session.delete(log)
+        db.session.delete(schedule)
+    pill = Pill.query.get(pill_id)
+    db.session.delete(pill)
+    db.session.commit()
+    socketio.emit('database_updated', {'message': 'Pill deleted'})
+    return {'status': 'success', 'message': 'pill deleted successfully'}
 
 def get_upcoming_pills():
     day = datetime.now().strftime('%A')
@@ -311,7 +439,7 @@ def status():
 
 if __name__ == '__main__':
    # For running the server on the local machine use the following command 
-   socketio.run(app, debug=True)
+   # socketio.run(app, debug=True)
 
    # For running the server on the local network use the following command (For BBB ⬇️)
-   # socketio.run(app, debug=True, host='0.0.0.0')
+   socketio.run(app, debug=True, host='0.0.0.0')
