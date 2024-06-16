@@ -108,6 +108,38 @@
                         </div>
                     </div>
                 </div> 
+            {% elif last_log.intake_status == 'stuck' %}   
+            <div class="is-flex mt-5" style="gap:50px; justify-content: center">
+                <div>
+                    <span class="is-inline-block has-text-centered is-size-5 has-text-weight-bold" style="width: 100%;">
+                        <span class="icon is-small">
+                            <i class="fa-solid fa-times" style="color: #ffb70f;"></i>
+                        </span>
+                    </span>
+                    <div class="is-flex" style="gap: 15px">
+                        <span>{{ last_log.intake_status|capitalize }}</span>
+                        <span>{{ last_log.date }}</span>
+                        <span>{{ last_log.time }}</span>
+                        <span>{{ last_log.pill_name }}</span>
+                    </div>
+                </div>
+            </div> 
+            {% elif last_log.intake_status == 'empty' %}   
+            <div class="is-flex mt-5" style="gap:50px; justify-content: center">
+                <div>
+                    <span class="is-inline-block has-text-centered is-size-5 has-text-weight-bold" style="width: 100%;">
+                        <span class="icon is-small">
+                            <i class="fa-solid fa-times" style="color: #66d1ff;"></i>
+                        </span>
+                    </span>
+                    <div class="is-flex" style="gap: 15px">
+                        <span>{{ last_log.intake_status|capitalize }}</span>
+                        <span>{{ last_log.date }}</span>
+                        <span>{{ last_log.time }}</span>
+                        <span>{{ last_log.pill_name }}</span>
+                    </div>
+                </div>
+            </div> 
             {% else %}
                 <span class="is-inline-block has-text-centered mt-5" style="width: 100%;">No logs</span>
             {% endif %}        
@@ -320,9 +352,25 @@
                 <td>{{ 'A (left)' if log.schedule.pill.tank == 'a' else 'B (right)' }}</td>
                 <td>{{ log.schedule.quantity }}</td>
                 <td>
-                    <span class="tag {{ 'is-success' if log.intake_status == 'taken' else 'is-danger' }}">
-                        {{ 'Taken' if log.intake_status == 'taken' else 'Missed' }}
+                    <span class="tag 
+                                {% if log.intake_status == 'taken' %}
+                                    is-success
+                                {% elif log.intake_status == 'missed' %}
+                                    is-danger
+                                {% elif log.intake_status == 'stuck' %}
+                                    is-warning
+                                {% elif log.intake_status == 'empty' %}
+                                    is-info
+                                {% else %}
+                                    is-default
+                                {% endif %}">
+                        {{ 'Taken' if log.intake_status == 'taken' else 
+                        'Missed' if log.intake_status == 'missed' else 
+                        'Stuck' if log.intake_status == 'stuck' else 
+                        'Empty' if log.intake_status == 'empty' else 
+                        'Unknown' }}
                     </span>
+
                 </td>
             </tr>
             {% endfor %}
@@ -411,17 +459,21 @@
     const intakeStatusChartElement = document.getElementById('intake-status-chart');
     const taken = {{ intake_statuses.taken }};
     const missed = {{ intake_statuses.missed }};
+    const stuck = {{ intake_statuses.stuck }}; 
+    const empty = {{ intake_statuses.empty }};
 
     const intakeStatusChart = new Chart(intakeStatusChartElement, {
         type: 'pie',
         data: {
-            labels: ['Taken', 'Missed'],
+            labels: ['Taken', 'Missed', 'Stuck', 'Empty'],
             datasets: [{
                 label: 'Pill Intakes',
                 data: [taken, missed],
                 backgroundColor: [
                 'rgb(72, 199, 142)',
-                'rgb(255, 102, 133)'
+                'rgb(255, 102, 133)',
+                'yellow',
+                'orange'
                 ],
                 hoverOffset: 4
             }]

@@ -29,7 +29,7 @@ class Schedule(db.Model):
 
 class Log(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    # intake_status = ('taken', 'missed')
+    # intake_status = ('taken', 'missed', 'stuck', 'empty)
     intake_status = db.Column(db.String(6), nullable=False)
     date_time = db.Column(db.DateTime, default=datetime.utcnow)
     schedule_id = db.Column(db.Integer, db.ForeignKey('schedule.id'), nullable=False)
@@ -150,7 +150,7 @@ def index():
     disable_clear_logs = False
     are_two_pills = False
     upcoming_pills = get_upcoming_pills()
-    intake_statuses = {'taken': 0, 'missed': 0}
+    intake_statuses = {'taken': 0, 'missed': 0, 'stuck': 0, 'empty': 0}
     last_log = False
     schedules_bar_chart_data = []
 
@@ -439,7 +439,7 @@ def status():
 
 if __name__ == '__main__':
    # For running the server on the local machine use the following command 
-   # socketio.run(app, debug=True)
+   socketio.run(app, debug=True)
 
    # For running the server on the local network use the following command (For BBB ⬇️)
-   socketio.run(app, debug=True, host='0.0.0.0')
+   # socketio.run(app, debug=True, host='0.0.0.0')
