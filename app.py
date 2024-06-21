@@ -249,6 +249,21 @@ def logs():
     socketio.emit('database_updated', {'message': 'Log added'})
     return {'status': 'success', 'message': 'log added successfully'}
 
+@app.route('/api/logs', methods=['GET'])
+def get_logs():
+    logs = Log.query.all()
+    return {
+        'status': 'success',
+        'logs': [{
+            'id': log.id,
+            'intake_status': log.intake_status,
+            'schedule_id': log.schedule_id,
+            'pill_name': log.schedule.pill.name,
+            'date': log.date_time.strftime('%Y-%m-%d'),
+            'time': log.date_time.strftime('%H:%M')
+        } for log in logs]
+    }
+
 @app.route('/api/clear_logs', methods=['POST'])
 def clear_logs_api():
     Log.query.delete()
