@@ -10,106 +10,84 @@
         This project represents the collective efforts of our dedicated team. Below, you will find descriptions of each team member's contributions and roles
     </p>
 
-    <div class="is-flex mt-6 pl-6 pr-6" style="gap: 50px">
-        <!-- Abdul Wahab -->
-        <div class="card raise">
-            <div class="card-content">
-              <div class="media">
-                <div class="media-left">
-                  <figure class="image is-48x48">
-                    <img
-                      src="https://bulma.io/assets/images/placeholders/96x96.png"
-                      alt="Placeholder image"
-                    />
-                  </figure>
-                </div>
-                <div class="media-content">
-                  <p class="title is-4">Abdul Wahab</p>
-                  <p class="subtitle is-6">MS. Informatics</p>
-                </div>
-              </div>
-          
-              <div class="content">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus nec
-                iaculis mauris.
-              </div>
-            </div>
+    <div class="is-flex is-justify-content-center mt-6 pl-6 pr-6" style="gap: 50px">
+      <!-- Abdul Wahab -->
+      <div class="card shadow-md is-cursor-pointer transform is-duration-300 hover-shadow-xl hover-translate-y raise team-card">
+        <div class="card-image">
+            <figure class="image">
+                <img src="{{ url_for('static', filename='images/abdul.jpg') }}"
+                    alt="Placeholder image">
+            </figure>
         </div>
-        <!-- Amir Farahani -->
-        <div class="card raise">
-            <div class="card-content">
-              <div class="media">
-                <div class="media-left">
-                  <figure class="image is-48x48">
-                    <img
-                      src="https://bulma.io/assets/images/placeholders/96x96.png"
-                      alt="Placeholder image"
-                    />
-                  </figure>
-                </div>
-                <div class="media-content">
-                  <p class="title is-4">Amir Farahani</p>
-                  <p class="subtitle is-6">MS. Embedded Systems</p>
-                </div>
-              </div>
-          
-              <div class="content">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus nec
-                iaculis mauris.
-              </div>
-            </div>
-        </div>
-        <!-- Lars Imbsweiler -->
-        <div class="card raise">
-            <div class="card-content">
-              <div class="media">
-                <div class="media-left">
-                  <figure class="image is-48x48">
-                    <img
-                      src="https://bulma.io/assets/images/placeholders/96x96.png"
-                      alt="Placeholder image"
-                    />
-                  </figure>
-                </div>
-                <div class="media-content">
-                  <p class="title is-4">Lars Imbsweiler</p>
-                  <p class="subtitle is-6">BS. Informatics</p>
-                </div>
-              </div>
-          
-              <div class="content">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus nec
-                iaculis mauris.
-              </div>
-            </div>
-        </div>
-        <!-- Amit Saxena -->
-        <div class="card raise">
-            <div class="card-content">
-              <div class="media">
-                <div class="media-left">
-                  <figure class="image is-48x48">
-                    <img
-                      src="https://bulma.io/assets/images/placeholders/96x96.png"
-                      alt="Placeholder image"
-                    />
-                  </figure>
-                </div>
-                <div class="media-content">
-                  <p class="title is-4">Amit Saxena</p>
-                  <p class="subtitle is-6">BS. Informatics</p>
-                </div>
-              </div>
-          
-              <div class="content">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus nec
-                iaculis mauris.
-              </div>
+        <div class="card-content">
+            <div class="content has-text-grey-light">
+              <!-- center text -->
+              <h3 class="has-text-centered">Abdul Wahab</h3>
             </div>
         </div>
     </div>
-    
-    
+    <!-- Amir Farahani -->
+    <div class="card shadow-md is-cursor-pointer transform is-duration-300 hover-shadow-xl hover-translate-y raise team-card">
+      <div class="card-image">
+          <figure class="image">
+              <img src="{{ url_for('static', filename='images/amir.jpg') }}"
+                  alt="Placeholder image">
+          </figure>
+      </div>
+      <div class="card-content">
+          <div class="content has-text-grey-light">
+            <!-- center text -->
+            <h3 class="has-text-centered">Amir Farahani</h3>
+          </div>
+      </div>
+    </div>
+    <!-- Lars Imbsweiler -->
+    <div class="card shadow-md is-cursor-pointer transform is-duration-300 hover-shadow-xl hover-translate-y raise team-card">
+      <div class="card-image">
+          <figure class="image">
+              <img src="{{ url_for('static', filename='images/lars.jpg') }}"
+                  alt="Placeholder image">
+          </figure>
+      </div>
+      <div class="card-content">
+          <div class="content has-text-grey-light">
+            <!-- center text -->
+            <h3 class="has-text-centered">Lars Imbsweiler</h3>
+          </div>
+      </div>
+    </div>
+    <!-- Amit Saxena -->
+    <div class="card shadow-md is-cursor-pointer transform is-duration-300 hover-shadow-xl hover-translate-y raise team-card">
+      <div class="card-image">
+          <figure class="image">
+              <img src="{{ url_for('static', filename='images/amit.jpg') }}"
+                  alt="Placeholder image">
+          </figure>
+      </div>
+      <div class="card-content">
+          <div class="content has-text-grey-light">
+            <!-- center text -->
+            <h3 class="has-text-centered">Amit Saxena</h3>
+          </div>
+      </div>
+    </div>
+    <!-- Amit Saxena -->
+    <div class="card is-hidden shadow-md is-cursor-pointer transform is-duration-300 hover-shadow-xl hover-translate-y raise team-card">
+      <div class="card-image">
+          <figure class="image">
+              <img src="{{ url_for('static', filename='images/amit.jpg') }}"
+                  alt="Placeholder image">
+          </figure>
+      </div>
+      <div class="card-content">
+          <div class="content has-text-grey-light">
+            <!-- center text -->
+            <h3 class="has-text-centered">Amit Saxena</h3>
+          </div>
+      </div>
+    </div>
+  </div>
+
 </section>
 
 {% endblock %}

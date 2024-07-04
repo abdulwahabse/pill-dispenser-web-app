@@ -31,3 +31,7 @@
     background-size: cover;
     height: 30vh;
 }
+
+.team-card {
+    width: 300px;
+}
