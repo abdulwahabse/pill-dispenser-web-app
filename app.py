@@ -454,7 +454,7 @@ def status():
 
 if __name__ == '__main__':
    # For running the server on the local machine use the following command 
-   socketio.run(app, debug=True)
+   # socketio.run(app, debug=True)
 
    # For running the server on the local network use the following command (For BBB ⬇️)
-   # socketio.run(app, debug=True, host='0.0.0.0')
+   socketio.run(app, debug=True, host='0.0.0.0')
