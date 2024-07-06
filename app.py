@@ -5,6 +5,9 @@ from datetime import datetime, timedelta
 from flask import Flask, render_template, request, redirect, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_socketio import SocketIO, emit
+from time import gmtime, strftime
+import time
+import pytz
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'dfewfew123213rwdsgert34tgfd1234grgsf'
@@ -31,7 +34,7 @@ class Log(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     # intake_status = ('taken', 'missed', 'stuck', 'empty)
     intake_status = db.Column(db.String(6), nullable=False)
-    date_time = db.Column(db.DateTime, default=datetime.utcnow)
+    date_time = db.Column(db.DateTime, default=lambda: datetime.now(pytz.timezone('Etc/GMT-2')))
     schedule_id = db.Column(db.Integer, db.ForeignKey('schedule.id'), nullable=False)
 
 with app.app_context():
